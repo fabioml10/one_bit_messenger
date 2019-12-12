@@ -1,0 +1,47 @@
+web:
+  build: .
+  ports: ["3000:3000"]
+  tty: true
+  stdin_open: true
+  expose: ["3000"]
+  environment:
+    - RAILS_ENV=development
+    - REDIS_URL=redis://@redis:6379/15
+    - API_AUTHORIZATION=development
+  links:
+    - db
+    - redis
+  volumes:
+    - ".:/one_bit_messenger"
+
+db:
+  image: postgres:10.5
+  environment:
+    POSTGRES_PASSWORD: password
+    POSTGRES_USER: one_bit_messenger
+  ports: ["5432:5432"]
+  expose: ["5432"]
+
+redis:
+  container_name: one_bit_messenger
+  image: redis:alpine
+  command: redis-server --port 6379
+  ports:
+    - "6379:6379"
+  expose:
+    - "6379"
+
+sidekiq:
+  build: .
+  command: sidekiq
+  tty: true
+  stdin_open: true
+  volumes:
+    - ".:/one_bit_messenger"
+  environment:
+    - RAILS_ENV=development
+    - REDIS_URL=redis://@redis:6379/15
+    - API_AUTHORIZATION=development
+  links:
+    - db
+    - redis
