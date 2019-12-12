@@ -15,3 +15,9 @@ require("channels")
 //
 // const images = require.context('../images', true)
 // const imagePath = (name) => images(name, true)
+
+import bulmaQuickview from 'bulma-quickview/src/js'
+ 
+document.addEventListener('turbolinks:load', function() {
+  let quickviews = bulmaQuickview.attach()
+})
